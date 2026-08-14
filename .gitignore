@@ -1,0 +1,13 @@
+# local data cache (SQLite DB, downloaded artifacts, extracted logs)
+data/
+*.db
+*.sqlite3
+
+__pycache__/
+*.pyc
+*.egg-info/
+.venv/
+.pytest_cache/
+.ruff_cache/
+
+.env
