@@ -110,7 +110,7 @@ From a 10 day window against the real repo:
 | runs analyzed | 174 |
 | failing job records | 305 |
 | confirmed flakes (fail then pass at the same commit) | 62 |
-| failure signatures grouped into clusters | 225 into 106 (53% dedup) |
+| failure signatures grouped into clusters | 225 into 61 (73% dedup) |
 | occurrences classified with no model involved | 29% |
 | confirmed flakes wrongly called a real regression | 0 |
 
