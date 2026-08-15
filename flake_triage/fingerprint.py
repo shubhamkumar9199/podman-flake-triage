@@ -43,6 +43,30 @@ NOISE_RE = re.compile(
     re.IGNORECASE,
 )
 
+# Cascade errors: once one of these fires, everything after it in the same job
+# is fallout rather than an independent failure, so the cascade error IS the
+# flake and the rest is noise.
+#
+# Ported from edsantiago/containertools (Apache-2.0), whose cirrus-flake-assign
+# carried a --nuke flag: "delete all other flakes in the given task. Used for
+# the unlinkat/EBUSY and unmount/EINVAL flakes, where everything else is hosed
+# after that error." That was a human decision there; here it is automatic.
+CASCADE_RE = re.compile(
+    r"(unlinkat\b.*(EBUSY|device or resource busy|directory not empty)|"
+    r"unmount\b.*(EINVAL|invalid argument))",
+    re.IGNORECASE,
+)
+
+# Teardown failures are secondary: a test that already failed often fails to
+# clean up after itself, which is expected and is not a separate flake.
+# Also from edsantiago/containertools: "Do not count teardown_suite as a flake
+# if there are other failures. That just means a failed test did not clean up
+# after itself, which is expected."
+TEARDOWN_FAIL_RE = re.compile(
+    r"(teardown_suite|basic_teardown|`[a-z_]*teardown[a-z_]*'\s+failed)",
+    re.IGNORECASE,
+)
+
 # error-line priority: the most diagnostically specific pattern wins.
 # generic test-name lines (not ok / [FAILED]) rank BELOW concrete errors so
 # the cluster key is the error, not the test that happened to hit it.
@@ -102,18 +126,34 @@ def pick_key_line(summary: str) -> tuple[str, str, str | None] | None:
     a merge no clustering key can safely do on its own.)
     """
     lines = [ANSI_RE.sub("", ln) for ln in summary.splitlines()]
-    best: tuple[int, int] | None = None  # (priority, index)
+
+    # A cascade error outranks everything: whatever follows it in the same job
+    # is fallout, so clustering on the fallout would split one root cause
+    # across many keys.
+    for i, line in enumerate(lines):
+        if not NOISE_RE.search(line) and CASCADE_RE.search(line):
+            window = "\n".join(lines[max(0, i - 2): i + 3])
+            return line, window, None
+
+    candidates: list[tuple[int, int]] = []  # (priority, index)
     for i, line in enumerate(lines):
         if NOISE_RE.search(line):
             continue
         for prio, pat in _PRIORITY:
             if pat.search(line):
-                if best is None or prio > best[0]:
-                    best = (prio, i)
+                candidates.append((prio, i))
                 break
-    if best is None:
+    if not candidates:
         return None
-    prio, i = best
+
+    # Demote teardown failures: a test that already failed frequently fails to
+    # clean up too, and that cleanup failure is not an independent flake. Only
+    # keep one if nothing else failed in this job.
+    non_teardown = [c for c in candidates if not TEARDOWN_FAIL_RE.search(lines[c[1]])]
+    if non_teardown:
+        candidates = non_teardown
+
+    prio, i = max(candidates, key=lambda c: c[0])
     qualifier: str | None = None
     if prio == 85:  # generic bats assert — find the owning test upward
         for j in range(i - 1, max(-1, i - 40), -1):

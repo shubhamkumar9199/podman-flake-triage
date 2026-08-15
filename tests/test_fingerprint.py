@@ -137,3 +137,51 @@ def test_bats_sequence_number_normalized_but_file_id_kept():
     b = normalize("not ok 316 |220| podman healthcheck in 12ms")
     assert a == b
     assert "|220|" in a
+
+
+# --- rules ported from edsantiago/containertools (Apache-2.0) ---
+
+def test_teardown_failure_loses_to_a_real_failure():
+    # Ed's rule: a failed test often fails to clean up too; that cleanup
+    # failure is expected fallout, not an independent flake
+    summary = "\n".join(
+        [
+            "not ok 127 |065| podman cp file from container to container in 64196ms",
+            "# Error: cannot remove container: in use",
+            "# `basic_teardown' failed",
+        ]
+    )
+    picked = pick_key_line(summary)
+    assert picked is not None
+    assert "teardown" not in picked[0]
+    assert "cannot remove container" in picked[0]
+
+
+def test_teardown_failure_kept_when_it_is_the_only_failure():
+    # bats reports a teardown failure with its own `not ok` line, so when that
+    # is all there is, the teardown IS the failure and must not be discarded
+    summary = "not ok 5 teardown_suite\n# `teardown_suite' failed"
+    picked = pick_key_line(summary)
+    assert picked is not None
+    assert "teardown_suite" in picked[0]
+
+
+def test_cascade_error_outranks_everything_after_it():
+    # Ed's --nuke rule: after unlinkat/EBUSY everything else is hosed
+    summary = "\n".join(
+        [
+            "time=\"2026-08-13T10:00:00Z\" level=error msg=\"unlinkat /tmp/x: device or resource busy\"",
+            "curl: (22) The requested URL returned error: 503",
+            "Error: some downstream fallout",
+        ]
+    )
+    picked = pick_key_line(summary)
+    assert picked is not None
+    assert "unlinkat" in picked[0]
+
+
+def test_unmount_einval_is_a_cascade_error():
+    summary = "Error: unmount /var/lib/containers/x: EINVAL\nError: later fallout"
+    picked = pick_key_line(summary)
+    assert picked is not None
+    assert "unmount" in picked[0]
