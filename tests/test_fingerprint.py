@@ -195,3 +195,39 @@ def test_ginkgo_seconds_spelling_normalized():
     b = normalize("Podman cp | • [FAILED] [4.205 seconds]")
     assert a == b
     assert normalize("took 3818ms") == normalize("took 42ms")
+
+
+def test_expected_error_never_becomes_the_cluster_key():
+    # podman's suites provoke errors on purpose to check they are handled, and
+    # bats marks them "[ rc=N (expected) ]". Clustering on one produces a key
+    # that is really just the test suite working correctly. Observed live on
+    # the 010-images "podman image rm --force bogus" failure.
+    summary = "\n".join(
+        [
+            "not ok 2 |010| podman image rm --force bogus in 1087ms",
+            "#   `run_podman images' failed",
+            "# $ podman-remote",
+            "# Error: bogus: image not known",
+            "# [ rc=1 (expected) ]",
+        ]
+    )
+    picked = pick_key_line(summary)
+    assert picked is not None
+    assert "bogus: image not known" not in picked[0]
+    assert "run_podman images" in picked[0]
+
+
+def test_unexpected_error_still_wins_over_the_test_name():
+    # the counterexample: when an Error: line is NOT marked expected it is the
+    # most diagnostic thing present and must still be chosen. Anchoring on the
+    # `not ok` line instead would key on the test name and lose the cause.
+    summary = "\n".join(
+        [
+            "not ok 299 [500] podman networking: port with --userns=keep-id in 4348ms",
+            "#| FAIL: exit code is 126; expected 0",
+            "# Error: rootlessport listen tcp 127.0.0.1:52856: bind: address already in use",
+        ]
+    )
+    picked = pick_key_line(summary)
+    assert picked is not None
+    assert "address already in use" in picked[0]

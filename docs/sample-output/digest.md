@@ -20,7 +20,7 @@ Window: 2026-08-04T00:49:41Z → 2026-08-13T21:00:13Z · workflow `ci.yml` · re
 ### TEST_TIMEOUT (0.90, llm) — 31 occurrence(s) · ⚠ confined to branch `fix/archive-put-volume-resolution-21861`, never re-run to green — likely that PR's regression, not a flake
 - signature: `Podman cp | • [FAILED] [DUR]`
 - evidence: `[FAILED] timed out waiting for "TBAwcJiPXTcusAKkhZZn" in logs of container c-multi-3`
-- note: The failure indicates a timeout while waiting for specific logs from a container, which directly points to a test timeout issue.
+- note: The failure indicates a timeout while waiting for specific logs from a container, which is characteristic of a test timeout issue.
 - jobs: int remote rootless fedora-current,int local rootless fedora-prior,int remote root fedora-prior,int local root debian-sid,int local root fedora-current,int local rootless fedora-current,int remote root fedora-rawhide,int remote root fedora-current,int local rootless fedora-rawhide,int local rootless debian-sid,int remote root debian-sid,int local root fedora-rawhide,int local root fedora-prior
 - seen: 2026-08-12 → 2026-08-12
 ### NETWORK_INFRA (1.00, regex) — 25 occurrence(s) · 16 re-run-confirmed
@@ -35,10 +35,10 @@ Window: 2026-08-04T00:49:41Z → 2026-08-13T21:00:13Z · workflow `ci.yml` · re
 - note: make target failed
 - jobs: macos machine applehv
 - seen: 2026-08-04 → 2026-08-13
-### TEST_TIMEOUT (1.00, llm) — 11 occurrence(s) · 3 re-run-confirmed
+### TEST_TIMEOUT (0.90, llm) — 11 occurrence(s) · 3 re-run-confirmed
 - signature: `Podman run networking | • [FAILED] [DUR]`
 - evidence: `[FAILED] timed out waiting for "OHkumtZLJcFhOkEGpEih" in logs of container srcip-ctr`
-- note: The failure is explicitly due to a timeout while waiting for logs from a container, indicating that the test did not complete in the expected time frame.
+- note: The logs indicate that the test failed due to a timeout while waiting for specific logs from a container. This suggests that the failure is related to a timeout issue during the test execution.
 - jobs: int local rootless fedora-current,int remote rootless fedora-current,int local rootless fedora-prior,int local rootless debian-sid,int local rootless fedora-rawhide
 - seen: 2026-08-10 → 2026-08-13
 ### NETWORK_INFRA (1.00, regex) — 10 occurrence(s) · 7 re-run-confirmed
@@ -76,7 +76,7 @@ Window: 2026-08-04T00:49:41Z → 2026-08-13T21:00:13Z · workflow `ci.yml` · re
 - evidence: `#|     FAIL: completion ignores the incomplete early flag
 #| expected: = --module=
 #|   actual:   --module`
-- note: The failure indicates that the command-line completion is not functioning as expected, which suggests a bug in the test related to command-line argument handling.
+- note: The failure indicates that the command-line completion is not functioning as expected, which suggests a bug in the test itself rather than an issue with the environment or infrastructure.
 - jobs: sys local rootless fedora-current,sys local rootless debian-sid,sys local rootless fedora-prior,sys local rootless fedora-rawhide
 - seen: 2026-08-10 → 2026-08-10
 ### NETWORK_INFRA (1.00, regex) — 4 occurrence(s) · 2 re-run-confirmed
@@ -90,8 +90,9 @@ Window: 2026-08-04T00:49:41Z → 2026-08-13T21:00:13Z · workflow `ci.yml` · re
 - evidence: `[FAILED] Expected
       <string>: 1777 1786525417
   to equal
-      <string>: 1777 1566297043`
-- note: The test is failing due to an unexpected value being returned, indicating a potential bug in the test logic or the product behavior. The repeated failure across multiple tests suggests a consistent issue rather than a transient problem.
+      <string>: 1777 1566297043
+  In [It] at: /var/tmp/podman-container-tools/podman/test/e2e/run_test.go:1150 @ 08/12/26 09:03:41.709`
+- note: The test is failing due to an unexpected value being returned, indicating a potential bug in the test logic or the product behavior. The failure is consistent across multiple test cases related to volume permissions.
 - jobs: int remote root fedora-prior,int remote root fedora-current,int remote root fedora-rawhide,int local root debian-sid
 - seen: 2026-08-12 → 2026-08-13
 ### VM_INFRA (0.90, llm) — 3 occurrence(s)
@@ -104,33 +105,33 @@ Window: 2026-08-04T00:49:41Z → 2026-08-13T21:00:13Z · workflow `ci.yml` · re
 - signature: `# Error: copying layers and metadata for container "HEX": writing blob: adding layer with blob "sha256:HEX"/""/"sha256:HEX": unpacking failed (error: exit status 1; output: mkdir /run: no such file or directory)`
 - jobs: sys local root fedora-rawhide,sys local root debian-sid
 - seen: 2026-08-09 → 2026-08-13
-### TEST_TIMEOUT (1.00, llm) — 2 occurrence(s)
+### TEST_TIMEOUT (0.90, llm) — 2 occurrence(s)
 - signature: `not ok N bud-github-context-with-branch-subdir-commit | # `run_buildah build $WITH_POLICY_JSON -t ${target} "${gitrepo}"' failed`
 - evidence: `*** TIMED OUT ***`
-- note: The log indicates a timeout occurred during the execution of a test, as evidenced by the line stating '*** TIMED OUT ***'. This directly supports the classification of the failure as a test timeout.
+- note: The log explicitly indicates a timeout with the message '*** TIMED OUT ***', suggesting that the test did not complete within the expected time frame.
 - jobs: bud local root fedora-current,bud remote root fedora-current
 - seen: 2026-08-12 → 2026-08-12
 ### UNKNOWN (0.00, llm) — 2 occurrence(s) · ⚠ confined to branch `fix/archive-put-volume-resolution-21861`, never re-run to green — likely that PR's regression, not a flake
 - signature: `not ok N [23-containersArchive] POST exec/HEX/start [-d {}] : output`
 - jobs: apiv2  root fedora-current,apiv2  rootless fedora-current
 - seen: 2026-08-07 → 2026-08-07
-### TEST_TIMEOUT (0.90, llm) — 2 occurrence(s)
+### TEST_TIMEOUT (1.00, llm) — 2 occurrence(s)
 - signature: `Error: ssh: handshake failed: read tcp 127.0.0.1:NUM->127.0.0.1:NUM: wsarecv: An existing connection was forcibly closed by the remote host.`
 - evidence: `[TIMEDOUT] podman machine start [It] start simple machine
   D:/a/podman/podman/pkg/machine/e2e/start_test.go:18`
-- note: The log indicates a timeout occurred during the execution of the test case 'start simple machine', which suggests that the test did not complete within the expected time frame.
+- note: The log indicates a timeout occurred during the execution of the test case 'start simple machine', which directly points to a test timeout failure.
 - jobs: windows machine hyperv
 - seen: 2026-08-11 → 2026-08-13
 ### VM_INFRA (0.90, llm) — 2 occurrence(s) · 1 re-run-confirmed
 - signature: `Error: machine did not transition into running state: ssh error: ssh: handshake failed: read tcp 127.0.0.1:NUM->127.0.0.1:NUM: read: connection reset by peer`
 - evidence: `Error: machine did not transition into running state: ssh error: ssh: handshake failed: read tcp 127.0.0.1:64180->127.0.0.1:64153: read: connection reset by peer`
-- note: The error indicates a failure in establishing a connection to the virtual machine, suggesting an issue with the VM infrastructure.
+- note: The error indicates a failure in establishing an SSH connection to the virtual machine, suggesting an issue with the VM infrastructure.
 - jobs: macos machine libkrun
 - seen: 2026-08-11 → 2026-08-13
 ### VM_INFRA (0.90, llm) — 2 occurrence(s) · 1 re-run-confirmed
 - signature: `Error: machine did not transition into running state: ssh error: machine not in running state`
 - evidence: `Error: machine did not transition into running state: ssh error: machine not in running state`
-- note: The failure indicates that the virtual machine did not start as expected, leading to an exit code mismatch. This suggests an issue with the virtual machine infrastructure.
+- note: The failure indicates that the virtual machine did not start properly, which is a clear issue with the VM infrastructure. The specific error message about the machine not being in a running state supports this classification.
 - jobs: windows machine wsl
 - seen: 2026-08-06 → 2026-08-13
 ### UNKNOWN (0.00, llm) — 2 occurrence(s)
@@ -143,7 +144,7 @@ Window: 2026-08-04T00:49:41Z → 2026-08-13T21:00:13Z · workflow `ci.yml` · re
       <string>: total 0 drwxr-xr-x 2 root root 60 Aug 12 09:02 . dr-xr-xr-x 1 root root 100 Aug 12 09:02 .. -rw------- 1 root root 0 Aug 12 09:02 419713735
   to contain substring
       <string>: 9999 9999`
-- note: The test failure indicates that the expected ownership of the file did not match the actual ownership, suggesting a bug in the test logic or the functionality being tested.
+- note: The test failure indicates that the expected ownership of the files in the volume does not match the actual ownership, suggesting a bug in the uid/gid mapping logic of the Podman implementation.
 - jobs: int local root debian-sid,int local root fedora-rawhide
 - seen: 2026-08-12 → 2026-08-12
 ### TEST_BUG (0.90, llm) — 2 occurrence(s) · ⚠ confined to branch `fix/archive-put-volume-resolution-21861`, never re-run to green — likely that PR's regression, not a flake
@@ -152,43 +153,43 @@ Window: 2026-08-04T00:49:41Z → 2026-08-13T21:00:13Z · workflow `ci.yml` · re
       <string>: 1777 1786525282
   to equal
       <string>: 1777 1566297043`
-- note: The test failure indicates an unexpected value comparison, suggesting a potential bug in the test logic or the product's handling of volume permissions.
+- note: The test failure indicates an unexpected value comparison, suggesting a potential bug in the test logic or the product's handling of named volumes.
 - jobs: int local root fedora-current,int local root fedora-prior
 - seen: 2026-08-12 → 2026-08-12
 ### PRODUCT_RACE (0.90, llm) — 2 occurrence(s)
+- signature: `# Error: retrieving label for image "HEX": you may need to remove the image to resolve the error: fallback error checking whether image is a manifest list: choosing image instance: no image found in manifest list for architecture "amd64", variant "", OS "linux": choosing image instance: no image found in manifest list for architecture "amd64", variant "", OS "linux"`
+- evidence: `# Error: retrieving label for image "3866529f8180390e95c2c550029114a2b3f86ccc9986508b3df1e33b7ef12a66": you may need to remove the image to resolve the error: fallback error checking whether image is a manifest list: choosing image instance: no image found in manifest list for architecture "amd64", variant "", OS "linux": choosing image instance: no image found in manifest list for architecture "amd64", variant "", OS "linux"`
+- note: The error indicates that the image retrieval failed due to a missing image in the manifest list, which suggests a race condition in image availability. This aligns with the characteristics of a product race failure.
+- jobs: sys remote rootless fedora-current,sys remote root fedora-prior
+- seen: 2026-08-11 → 2026-08-12
+### PRODUCT_RACE (0.90, llm) — 2 occurrence(s)
 - signature: `# Error: copying layers and metadata for container "HEX": committing the finished image: creating image "HEX": layer not known`
 - evidence: `# Error: copying layers and metadata for container "10c0892a5bd08954b21cff001d223e1dc78a09b4f159df132ab22e497c73695a": committing the finished image: creating image "fcbdcb271e5e194ec13410884753fdc9bad59a23d1853299fbf33e5f8f34ba59": layer not known`
-- note: The error indicates a failure in committing an image due to a layer not being known, which suggests a potential race condition in the image handling process. This aligns with the characteristics of a product race issue.
+- note: The error indicates that the image layer is not known, which suggests a potential race condition in the image creation process. This aligns with the characteristics of a product race failure.
 - jobs: sys remote root debian-sid,sys local rootless fedora-current
 - seen: 2026-08-13 → 2026-08-13
 ### NETWORK_INFRA (1.00, llm) — 2 occurrence(s) · 1 re-run-confirmed
 - signature: `# Error: cannot bind tcp port :NUM: address already in use`
 - evidence: `# Error: cannot bind tcp port :5113: address already in use`
-- note: The failure is due to a network-related issue where a TCP port is already in use, preventing the network reload from succeeding.
+- note: The failure is related to a network operation where a TCP port is already in use, indicating a network infrastructure issue.
 - jobs: sys local root debian-sid,sys local root fedora-rawhide
 - seen: 2026-08-10 → 2026-08-10
 ### NETWORK_INFRA (1.00, llm) — 2 occurrence(s)
 - signature: `# Error: cannot bind tcp port 127.0.0.1:NUM: address already in use`
 - evidence: `Error: cannot bind tcp port 127.0.0.1:5400: address already in use`
-- note: The failure is due to a network port binding issue, indicating a problem with network infrastructure.
+- note: The failure is due to an inability to bind to a TCP port, indicating a network-related issue. This suggests a problem with network infrastructure rather than a bug in the test or product.
 - jobs: sys remote root fedora-rawhide,sys local root fedora-rawhide
 - seen: 2026-08-11 → 2026-08-11
-### PRODUCT_RACE (0.90, llm) — 2 occurrence(s)
-- signature: `# Error: bogus: image not known`
-- evidence: `# Error: retrieving label for image "3866529f8180390e95c2c550029114a2b3f86ccc9986508b3df1e33b7ef12a66": you may need to remove the image to resolve the error: fallback error checking whether image is a manifest list: choosing image instance: no image found in manifest list for architecture "amd64", variant "", OS "linux": choosing image instance: no image found in manifest list for architecture "amd64", variant "", OS "linux"`
-- note: The error indicates that the image retrieval failed due to a missing image in the manifest list, which suggests a race condition in image availability. This aligns with the characteristics of a product race failure.
-- jobs: sys remote rootless fedora-current,sys remote root fedora-prior
-- seen: 2026-08-11 → 2026-08-12
 ### TEST_BUG (0.90, llm) — 1 occurrence(s) · 1 re-run-confirmed
 - signature: `time="DATETTIMEZ" level=error msg="unlinkat /tmp/podman-e2e-X directory not empty"`
 - evidence: `Unexpected warnings seen on stderr: "time=\"2026-08-10T13:05:03Z\" level=error msg=\"unlinkat /tmp/podman-e2e-2701650693/subtest-1777352725/p/clitmp/events: directory not empty\""`
-- note: The failure is due to an unexpected error message indicating that a directory is not empty during a system reset, which suggests a bug in the test or the product's handling of cleanup.
+- note: The failure indicates an unexpected error related to a directory not being empty during a system reset operation, suggesting a potential bug in the test or the functionality being tested.
 - jobs: int local root fedora-current
 - seen: 2026-08-10 → 2026-08-10
-### PARALLEL_INTERFERENCE (0.90, llm) — 1 occurrence(s)
+### TEST_BUG (0.90, llm) — 1 occurrence(s)
 - signature: `not ok N |700| podman play with user from image in DUR | # `run_podman build --layers=false --unsetenv PATH -t $imgname $PODMAN_TMPDIR' failed`
-- evidence: `# tags: ci:parallel`
-- note: The presence of the 'ci:parallel' tag suggests that this test may be affected by interference from other parallel tests, which can lead to failures in resource allocation or state.
+- evidence: `#   `run_podman build --layers=false --unsetenv PATH -t $imgname $PODMAN_TMPDIR' failed`
+- note: The failure indicates that a command related to building an image failed, which suggests a potential issue in the test logic or setup rather than an environmental problem.
 - jobs: sys local root fedora-prior
 - seen: 2026-08-13 → 2026-08-13
 ### NETWORK_INFRA (0.90, llm) — 1 occurrence(s) · ⚠ confined to branch `renovate/golang.org-x-net-0.x`, never re-run to green — likely that PR's regression, not a flake
@@ -196,27 +197,24 @@ Window: 2026-08-04T00:49:41Z → 2026-08-13T21:00:13Z · workflow `ci.yml` · re
 - evidence: `#|     FAIL: Mismatch between data sent and received
 #| expected: = size=53248 hash=bb3bee0b2eb44fa3830eadd6b3cd48d8 - head= a9 0a da 48 2a af 08 16 tail= e2 bb 90 31 e7 7c 91 28
 #|   actual:   size=49152 hash=1ac838d259ddceda8d151d8ad4faadce - head= a9 0a da 48 2a af 08 16 tail= 3f 77 ca de c5 f8 72 bf`
-- note: The failure indicates a mismatch between the expected and actual data sizes during a UDP transfer, suggesting a network-related issue. This aligns with the category of NETWORK_INFRA as it pertains to data transmission over the network.
+- note: The failure indicates a mismatch between the expected and actual data sizes during a network transfer, suggesting a network-related issue. This aligns with the category of NETWORK_INFRA.
 - jobs: sys local rootless debian-sid
 - seen: 2026-08-12 → 2026-08-12
-### TEST_BUG (0.90, llm) — 1 occurrence(s)
+### UNKNOWN (0.00, llm) — 1 occurrence(s)
 - signature: `not ok N |450| podman detects correct tty size in DUR | # `is "$output" "$rows $cols$CR" "stty under podman exec reads the correct dimensions"' failed`
-- evidence: `#|   actual: 'stty: standard input
-'`
-- note: The failure indicates that the expected output for the command was not met, suggesting a potential issue with the test itself rather than an environmental problem.
 - jobs: sys local rootless debian-sid
 - seen: 2026-08-09 → 2026-08-09
 ### TEST_BUG (0.90, llm) — 1 occurrence(s) · 1 re-run-confirmed
 - signature: `not ok N |252| quadlet - image tag in DUR | # `service_setup $container_service' failed`
 - evidence: `#   `service_setup $container_service' failed`
-- note: The failure indicates that the service setup for the container could not be completed, suggesting a potential issue in the test logic or setup process.
+- note: The failure indicates that the service setup for the container could not be completed, which suggests a bug in the test setup or execution. This is not related to infrastructure or timeouts, but rather an issue with the test itself.
 - jobs: sys local rootless fedora-current
 - seen: 2026-08-07 → 2026-08-07
 ### TEST_BUG (0.90, llm) — 1 occurrence(s) · ⚠ confined to branch `fix/machine-image-permissions`, never re-run to green — likely that PR's regression, not a flake
 - signature: `not ok N |220| podman healthcheck in DUR | # `cidmatch=$(grep "$cid" <<<"$output")' failed`
 - evidence: `#| expected: '"healthy"'
 #|   actual: '"unhealthy"'`
-- note: The test expected the health check status to be 'healthy', but it received 'unhealthy', indicating a failure in the health check logic. This suggests a potential bug in the health check implementation.
+- note: The test expected the health check status to be 'healthy', but it received 'unhealthy', indicating a failure in the test logic or the health check implementation.
 - jobs: sys local rootless fedora-prior
 - seen: 2026-08-08 → 2026-08-08
 ### TEST_TIMEOUT (0.90, llm) — 1 occurrence(s)
@@ -233,14 +231,14 @@ Window: 2026-08-04T00:49:41Z → 2026-08-13T21:00:13Z · workflow `ci.yml` · re
 - seen: 2026-08-06 → 2026-08-06
 ### PARALLEL_INTERFERENCE (0.90, llm) — 1 occurrence(s) · 1 re-run-confirmed
 - signature: `not ok N |065| podman cp file from container to container in DUR`
-- evidence: `not ok 127 |065| podman cp file from container to container in 64196ms`
-- note: The failure occurred during a parallel test execution, which suggests that interference between tests may have caused the issue.
+- evidence: `# tags: ci:parallel`
+- note: The presence of the 'ci:parallel' tag suggests that the test may be affected by interference from other parallel tests. This indicates a potential issue with test isolation in a parallel execution environment.
 - jobs: sys local root fedora-rawhide
 - seen: 2026-08-04 → 2026-08-04
 ### PARALLEL_INTERFERENCE (0.90, llm) — 1 occurrence(s) · 1 re-run-confirmed
 - signature: `not ok N |030| podman run docker-archive in DUR | # `run_podman create docker-archive:$archive' failed`
 - evidence: `not ok 21 |030| podman run docker-archive in 6571ms`
-- note: The failure occurred during a parallel execution of tests, which suggests that interference from other tests may have impacted the outcome.
+- note: The failure occurred during a parallel execution context, which suggests that interference from other tests may have impacted the outcome. The specific failure message indicates a problem with running a podman command, which can be influenced by concurrent operations.
 - jobs: sys local root fedora-current
 - seen: 2026-08-12 → 2026-08-12
 ### NETWORK_INFRA (1.00, regex) — 1 occurrence(s) · ⚠ confined to branch `fix-swagger-warnings`, never re-run to green — likely that PR's regression, not a flake
@@ -252,7 +250,7 @@ Window: 2026-08-04T00:49:41Z → 2026-08-13T21:00:13Z · workflow `ci.yml` · re
 ### TEST_BUG (0.90, llm) — 1 occurrence(s) · ⚠ confined to branch `fix-secret-event-filter`, never re-run to green — likely that PR's regression, not a flake
 - signature: ``events.Secret` is a core event type defined in `libpod/events/config.go`, and secret operations record events with `e.Type = events.Secret`. However, `generateEventFilter` previously lacked a `case "SECRET":` block, causing `podman events --filter secret=<name>` to fail with `Error: SECRET is an invalid filter`.`
 - evidence: `causing `podman events --filter secret=<name>` to fail with `Error: SECRET is an invalid filter`.`
-- note: The failure is due to a missing case in the event filter handling, which indicates a bug in the test logic related to filtering events.
+- note: The failure is due to a missing case in the event filter implementation, which indicates a bug in the test logic related to filtering events.
 - jobs: Validate source code changes
 - seen: 2026-08-11 → 2026-08-11
 ### TEST_BUG (0.90, llm) — 1 occurrence(s) · ⚠ confined to branch `fix/archive-put-volume-resolution-21861`, never re-run to green — likely that PR's regression, not a flake
@@ -262,7 +260,7 @@ Window: 2026-08-04T00:49:41Z → 2026-08-13T21:00:13Z · workflow `ci.yml` · re
   to equal
       <string>: 1777 1566297043
   In [It] at: /var/tmp/podman-container-tools/podman/test/e2e/run_volume_test.go:927 @ 08/12/26 09:06:07.169`
-- note: The test is failing due to an unexpected value for permissions, indicating a potential bug in the handling of volume permissions. The discrepancy in expected and actual values suggests a flaw in the test logic or the product behavior.
+- note: The test is failing due to an unexpected value for permissions, indicating a potential bug in the test logic or the product's handling of volume permissions.
 - jobs: int remote root debian-sid
 - seen: 2026-08-12 → 2026-08-12
 ### TEST_BUG (0.90, llm) — 1 occurrence(s) · 1 re-run-confirmed
@@ -287,19 +285,19 @@ Window: 2026-08-04T00:49:41Z → 2026-08-13T21:00:13Z · workflow `ci.yml` · re
 - signature: `Error: unable to copy from source docker://quay.io/libpod/testimage:NUM: copying system image from manifest list: parsing image configuration: Get "https://cdn01.quay.io/quayio-production-s3/sha256/b8/HEX?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIATAAF2YHTGR23ZTE6%2F20260805%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260805T100727Z&X-Amz-Expires=600&X-Amz-SignedHeaders=host&X-Amz-Signature=HEX&region=us-east-1&namespace=libpod&repo_name=testimage&akamai_signature=exp=NUM~hmac=HEX": remote error: tls: internal error`
 - evidence: `[TIMEDOUT] podman machine list [It] list machine: check if running while starting
   D:/a/podman/podman/pkg/machine/e2e/list_test.go:71`
-- note: The log indicates a timeout occurred while checking if the podman machine was running, which directly points to a test timeout issue.
+- note: The log indicates a timeout occurred during the execution of a test case, specifically when checking if a machine was running while starting. This suggests that the failure is related to a test timing out rather than an issue with the underlying infrastructure.
 - jobs: windows machine hyperv
 - seen: 2026-08-05 → 2026-08-05
 ### NETWORK_INFRA (0.90, llm) — 1 occurrence(s) · 1 re-run-confirmed
 - signature: `Error: pasta failed with exit code 1:`
 - evidence: `Listen failed for HOST TCP port */39951: Address already in use`
-- note: The failure is due to a port conflict, indicating an issue with network infrastructure where the requested port is already in use.
+- note: The failure is due to a port conflict, indicating that the network infrastructure is unable to allocate the requested port for the Podman container.
 - jobs: int local rootless fedora-prior
 - seen: 2026-08-11 → 2026-08-11
 ### VM_INFRA (0.90, llm) — 1 occurrence(s) · ⚠ confined to branch `renovate/github.com-sirupsen-logrus-1.x`, never re-run to green — likely that PR's regression, not a flake
 - signature: `Error: machine did not transition into running state: ssh error: machine is not listening on ssh port`
 - evidence: `Error: machine did not transition into running state: ssh error: machine is not listening on ssh port`
-- note: The failure indicates that the virtual machine did not start properly due to an SSH port issue, which is a problem related to the virtual machine infrastructure.
+- note: The error indicates a failure related to the virtual machine not being able to start due to SSH connectivity issues, which falls under VM infrastructure problems.
 - jobs: windows machine wsl
 - seen: 2026-08-13 → 2026-08-13
 ### VM_INFRA (0.90, llm) — 1 occurrence(s) · 1 re-run-confirmed
@@ -317,7 +315,7 @@ Window: 2026-08-04T00:49:41Z → 2026-08-13T21:00:13Z · workflow `ci.yml` · re
 ### PARALLEL_INTERFERENCE (0.90, llm) — 1 occurrence(s) · 1 re-run-confirmed
 - signature: `Error: committing container for step {Env:[PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin] Command:run Args:[touch rmtest:0] Flags:[] Attrs:map[] Message:RUN touch rmtest:0 Heredocs:[] Original:RUN touch rmtest:0}: copying layers and metadata for container "HEX": writing blob: adding layer with blob "sha256:HEX"/""/"sha256:HEX": unpacking failed (error: exit status 1; output: open /rmtest:0: no such file or directory)`
 - evidence: `Error: committing container for step {Env:[PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin] Command:run Args:[touch rmtest:0] Flags:[] Attrs:map[] Message:RUN touch rmtest:0 Heredocs:[] Original:RUN touch rmtest:0}: copying layers and metadata for container "04c35a389d8291aca95228f3ec9f1fd9d671f2b7e963f60973aaaa1690fb2315": writing blob: adding layer with blob "sha256:724a7a770a18a396d836f1d9f138d4d59bc7ccbdcdb52e537e092b917934fa7b"/""/"sha256:58b0aee591ec4897a5508c869395001c63a3e009a77616e68259c57d01af47ad": unpacking failed (error: exit status 1; output: open /rmtest:0: no such file or directory)`
-- note: The failure occurred during concurrent operations involving shared layers, leading to a race condition where a file could not be found. This suggests interference from parallel execution of tests.
+- note: The failure occurred during concurrent operations involving shared layers, leading to a conflict when trying to access a file that does not exist. This suggests that parallel execution of tests is interfering with each other.
 - jobs: int local root fedora-rawhide
 - seen: 2026-08-12 → 2026-08-12
 ### TEST_TIMEOUT (0.90, llm) — 1 occurrence(s) · ⚠ confined to branch `bump-6.1.1-dev`, never re-run to green — likely that PR's regression, not a flake
@@ -347,13 +345,13 @@ Window: 2026-08-04T00:49:41Z → 2026-08-13T21:00:13Z · workflow `ci.yml` · re
 ### PRODUCT_RACE (0.90, llm) — 1 occurrence(s)
 - signature: `# [TIME] Error: cannot bind tcp port :NUM: address already in use`
 - evidence: `Error: cannot bind tcp port :5453: address already in use`
-- note: The failure indicates that the specified TCP port is already in use, suggesting a race condition where multiple tests or processes are trying to bind to the same port simultaneously.
+- note: The error indicates that the port is already in use, suggesting a race condition where multiple tests or processes are trying to bind to the same port simultaneously.
 - jobs: sys local root fedora-prior
 - seen: 2026-08-04 → 2026-08-04
 ### TEST_BUG (0.90, llm) — 1 occurrence(s) · ⚠ confined to branch `config-port`, never re-run to green — likely that PR's regression, not a flake
 - signature: `# Error: unmarshalling into &types.PlayKubeReport{Pods:[]types.PlayKubePod(nil), Volumes:[]types.PlayKubeVolume(nil), PlayKubeTeardown:types.PlayKubeTeardown{StopReport:[]*types.PodStopReport{(*types.PodStopReport)(0xa43e90d8680)}, RmReport:[]*types.PodRmReport{(*types.PodRmReport)(0xa43e8e92510)}, VolumeRmReport:[]*types.VolumeRmReport(nil), SecretRmReport:[]*types.SecretRmReport{}}, Secrets:[]types.PlaySecret(nil), ServiceContainerID:"", ValidationWarnings:[]string(nil), ExitCode:(*int32)(nil)}, data "{\"Pods\":null,\"Volumes\":null,\"StopReport\":[{\"Errs\":[\"stopping container HEX: committing transaction to add exit code: disk I/O error: resource temporarily unavailable\",\"stopping container HEX: a container that depends on container HEX could not be stopped: container state improper\"],\"Id\":\"HEX\",\"RawInput\":\"liveness-exec-t459-kgiybdrv-unhealthy\"}],\"RmReport\":[{\"RemovedCtrs\":{\"HEX\":null,\"HEX\":null},\"Err\":null,\"Id\":\"HEX\"}],\"VolumeRmReport\":null,\"SecretRmReport\":[],\"Secrets\":null,\"ServiceContainerID\":\"\",\"ValidationWarnings\":null,\"ExitCode\":null}\n": json: cannot unmarshal string into Go struct field PodStopReport.PlayKubeTeardown.StopReport.Errs of type error`
 - evidence: `#| FAIL: exit code is 125; expected 0`
-- note: The failure indicates that the test expected an exit code of 0 but received 125 instead, suggesting a bug in the test logic or the code being tested. Additionally, the error message about unmarshalling indicates a potential issue with how data is being handled in the test.
+- note: The failure indicates that the test expected an exit code of 0 but received 125 instead, suggesting a bug in the test logic or the code under test. Additionally, the error message about unmarshalling indicates a potential issue with how data is being processed in the test.
 - jobs: sys remote rootless fedora-current
 - seen: 2026-08-11 → 2026-08-11
 ### PRODUCT_RACE (1.00, regex) — 1 occurrence(s) · 1 re-run-confirmed
@@ -366,28 +364,28 @@ Window: 2026-08-04T00:49:41Z → 2026-08-13T21:00:13Z · workflow `ci.yml` · re
 - signature: `# Error: unable to copy from source docker-archive:/tmp/podman_bats.Udbsfa/archive.tar: writing blob: adding layer with blob "sha256:HEX"/""/"sha256:HEX": unpacking failed (error: exit status 1; output: mkdir /run: no such file or directory)`
 - jobs: sys local root fedora-rawhide
 - seen: 2026-08-11 → 2026-08-11
+### RUNNER_INFRA (0.90, llm) — 1 occurrence(s)
+- signature: `# Error: killing container HEX: committing transaction to add exit code: disk I/O error: resource temporarily unavailable`
+- evidence: `# Error: killing container 81648c4831f1f88c31d05ad326fac6b0a743a69b0e8c3f7ed35e80825ae4a573: committing transaction to add exit code: disk I/O error: resource temporarily unavailable`
+- note: The failure is related to a disk I/O error, indicating a potential issue with the infrastructure where the tests are being run. This suggests a problem with the runner's ability to access necessary resources.
+- jobs: sys local rootless debian-sid
+- seen: 2026-08-10 → 2026-08-10
 ### RUNNER_INFRA (0.90, llm) — 1 occurrence(s) · ⚠ confined to branch `fix-xfs-quota-selinux`, never re-run to green — likely that PR's regression, not a flake
 - signature: `# Error: copying layers and metadata for container "HEX": writing blob: adding layer with blob "sha256:HEX"/""/"sha256:HEX": lstat /home/ubuntu.guest/.local/share/containers/storage/overlay/tempdirs/temp-dir-NUM/0-addition: no such file or directory`
 - evidence: `# Error: copying layers and metadata for container "0a8a8797ec1075461d7ad0b4ce05985a714fd4cf415566cf09be0882a9fc4bfb": writing blob: adding layer with blob "sha256:26d4ed1d17075cce1b19308d3d016b2d189eee732597e17d4774a9e0b5766855"/""/"sha256:26d4ed1d17075cce1b19308d3d016b2d189eee732597e17d4774a9e0b5766855": lstat /home/ubuntu.guest/.local/share/containers/storage/overlay/tempdirs/temp-dir-1024368511/0-addition: no such file or directory`
-- note: The error indicates a failure related to the file system where the container layers are being stored, specifically a missing directory. This suggests an issue with the runner's infrastructure rather than the Podman product itself.
+- note: The error indicates a failure related to the file system where the container layers are being written, suggesting an issue with the runner's infrastructure. The specific 'no such file or directory' message points to a problem in the environment where the tests are executed.
 - jobs: sys local rootless fedora-rawhide
 - seen: 2026-08-11 → 2026-08-11
-### RUNNER_INFRA (0.90, llm) — 1 occurrence(s)
-- signature: `# Error: container HEX is the service container of pod(s) HEX and cannot be removed without removing the pod(s)`
-- evidence: `# Error: killing container 81648c4831f1f88c31d05ad326fac6b0a743a69b0e8c3f7ed35e80825ae4a573: committing transaction to add exit code: disk I/O error: resource temporarily unavailable`
-- note: The failure is related to a disk I/O error, indicating a potential issue with the infrastructure where the tests are being run, rather than a problem with the Podman product itself.
-- jobs: sys local rootless debian-sid
-- seen: 2026-08-10 → 2026-08-10
 ### TEST_BUG (0.90, llm) — 1 occurrence(s) · 1 re-run-confirmed
 - signature: `# Error: committing container for step {Env:[PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin] Command:run Args:[mkdir /mountroot && echo data file inside the IMAGE - JrNUTk4NW3mEXYc > /mountroot/data] Flags:[] Attrs:map[] Message:RUN mkdir /mountroot && echo data file inside the IMAGE - JrNUTk4NW3mEXYc > /mountroot/data Heredocs:[] Original:RUN mkdir /mountroot && echo data file inside the IMAGE - JrNUTk4NW3mEXYc > /mountroot/data}: copying layers and metadata for container "HEX": writing blob: adding layer with blob "sha256:HEX"/""/"sha256:HEX": unpacking failed (error: exit status 1; output: mkdir /mountroot: no such file or directory)`
 - evidence: `# Error: committing container for step {Env:[PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin] Command:run Args:[mkdir /mountroot && echo data file inside the IMAGE - JrNUTk4NW3mEXYc > /mountroot/data] Flags:[] Attrs:map[] Message:RUN mkdir /mountroot && echo data file inside the IMAGE - JrNUTk4NW3mEXYc > /mountroot/data Heredocs:[] Original:RUN mkdir /mountroot && echo data file inside the IMAGE - JrNUTk4NW3mEXYc > /mountroot/data}: copying layers and metadata for container "21d4d48f6471c65838dd3008d513a7d72c9fab91941a601e1e478f8a9cdaf21e": writing blob: adding layer with blob "sha256:ad683f72dfe3b991d278c7beed528d6cd92d7ba768330709db42161b0f142664"/""/"sha256:11da3b82027e1ffdbd863db8dfcb8c70376847ab320fda2eea0e5504815653c0": unpacking failed (error: exit status 1; output: mkdir /mountroot: no such file or directory)`
-- note: The error indicates that the test is failing due to a missing directory when attempting to create it, which suggests a bug in the test setup or the environment. The failure is not due to external factors but rather an issue within the test itself.
+- note: The error indicates that the test is failing due to a command trying to create a directory that does not exist, which suggests a bug in the test setup or the command being executed. This is not a network or infrastructure issue, but rather a problem with the test itself.
 - jobs: sys local rootless debian-sid
 - seen: 2026-08-09 → 2026-08-09
 ### NETWORK_INFRA (1.00, llm) — 1 occurrence(s)
 - signature: `# Error: Get "https://raw.githubusercontent.com/containers/podman/main/test/build/from-scratch/Dockerfile": net/http: TLS handshake timeout`
 - evidence: `# Error: Get "https://raw.githubusercontent.com/containers/podman/main/test/build/from-scratch/Dockerfile": net/http: TLS handshake timeout`
-- note: The failure is due to a TLS handshake timeout while trying to access a remote resource, indicating a network-related issue.
+- note: The failure is due to a TLS handshake timeout when trying to access a remote resource, indicating a network-related issue.
 - jobs: sys local rootless fedora-rawhide
 - seen: 2026-08-07 → 2026-08-07
 ## Top re-run-confirmed flaky jobs

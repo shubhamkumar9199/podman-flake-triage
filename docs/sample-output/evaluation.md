@@ -1,4 +1,4 @@
-# Evaluation — 2026-08-15 11:13 UTC
+# Evaluation — 2026-08-15 11:39 UTC
 
 ## Corpus (all measured live from GHA, no synthetic data)
 - runs analyzed: 174 (64 with >1 attempt, 37%)
@@ -25,11 +25,11 @@
 - NETWORK_INFRA [regex]: 45
 - VM_INFRA [llm]: 19
 - HARNESS [regex]: 12
+- UNKNOWN [llm]: 9
 - NETWORK_INFRA [llm]: 8
-- UNKNOWN [llm]: 8
 - PRODUCT_RACE [llm]: 5
 - TEST_TIMEOUT [regex]: 5
-- PARALLEL_INTERFERENCE [llm]: 4
+- PARALLEL_INTERFERENCE [llm]: 3
 - RUNNER_INFRA [llm]: 2
 - RUNNER_INFRA [regex]: 2
 - PRODUCT_RACE [regex]: 1

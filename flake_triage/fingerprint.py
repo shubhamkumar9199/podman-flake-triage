@@ -67,6 +67,20 @@ TEARDOWN_FAIL_RE = re.compile(
     re.IGNORECASE,
 )
 
+# Podman's test suites deliberately provoke errors to check they are handled,
+# and those errors appear in the failure block of a test that failed for an
+# entirely different reason. Clustering on one produces a key that is really
+# just the suite working correctly.
+#
+# bats says so itself: run_podman prints "[ rc=N (expected) ]" right after an
+# error it was told to expect (test/system/helpers.bash). So the marker, not a
+# guess about the message, decides.
+EXPECTED_MARKER_RE = re.compile(r"\[\s*rc=\d+\s*\(expected\)\s*\]|\(expected\)\s*\]")
+# The marker belongs to the error directly above it, so the window is tight.
+# Widening it swallows the real failure: in the observed 010-images case the
+# bats assert sits three lines above the marker and would be excluded too.
+EXPECTED_LOOKAHEAD = 2
+
 # error-line priority: the most diagnostically specific pattern wins.
 # generic test-name lines (not ok / [FAILED]) rank BELOW concrete errors so
 # the cluster key is the error, not the test that happened to hit it.
@@ -138,9 +152,16 @@ def pick_key_line(summary: str) -> tuple[str, str, str | None] | None:
             window = "\n".join(lines[max(0, i - 2): i + 3])
             return line, window, None
 
+    def is_expected(idx: int) -> bool:
+        """True if the harness marked this error as one the test wanted."""
+        return any(
+            EXPECTED_MARKER_RE.search(lines[j])
+            for j in range(idx + 1, min(len(lines), idx + 1 + EXPECTED_LOOKAHEAD))
+        )
+
     candidates: list[tuple[int, int]] = []  # (priority, index)
     for i, line in enumerate(lines):
-        if NOISE_RE.search(line):
+        if NOISE_RE.search(line) or is_expected(i):
             continue
         for prio, pat in _PRIORITY:
             if pat.search(line):
