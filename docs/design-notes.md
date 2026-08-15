@@ -184,6 +184,41 @@ told it is untrusted input. A CI log contains whatever a test decided to print,
 which means anyone who can run CI can put text in there aimed at whatever reads
 it later.
 
+## Inheriting from the retired flake catalogue
+
+`edsantiago/containertools` is still online and Apache-2.0 licensed. The tools
+in it are dead in exactly one place: they fetched logs from
+`api.cirrus-ci.com`, which no longer exists. Almost nothing else in them was
+Cirrus-specific. The error normalisation, the test-name canonicalisation and
+the rules about which log lines are noise are Podman knowledge, and Podman
+still exists.
+
+Two rules were worth porting, both encoding triage experience that nobody
+would derive from first principles.
+
+**Teardown failures are secondary.** From `cirrus-flake-summarize`: do not
+count a teardown failure as a flake when there are other failures, because it
+just means a failed test did not clean up after itself. That is expected
+fallout. On the sample corpus this rule fixed a real case: a `065-cp` failure
+was keying on `basic_teardown` rather than on the failure that caused it.
+
+**Cascade errors poison everything after them.** `cirrus-flake-assign` had a
+`--nuke` flag to delete all other flakes in a task, used for the
+`unlinkat`/EBUSY and `unmount`/EINVAL cases where everything downstream is
+garbage. There it was a human decision made afterwards; here the cascade error
+simply outranks anything following it in the same job.
+
+Two other rules were arrived at here independently before that code was found:
+stripping the leading logformatter offset, and dropping bats timing suffixes.
+`cirrus-flake-summarize` does both. Two people hitting the same rocks years
+apart is reasonable evidence the approach is right.
+
+The part of that toolchain worth noticing most is what it did *not* automate.
+`cirrus-flake-assign` is a human typing "these failures belong to issue
+#12345". Everything around that step was scripted; the judgement itself never
+was, and it stopped happening when its author left. That is the gap this tool
+is aimed at.
+
 ## Metadata beats reading the text
 
 Some conclusions cannot be reached by reading a log at all.
