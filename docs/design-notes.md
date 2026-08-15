@@ -77,8 +77,9 @@ and never run logformatter, because the call in `hack/ci/win-lib.ps1` is still
 gated behind `CIRRUS_CI`, and nothing has set that variable since Cirrus was
 removed in June. Those jobs fall back to reading the raw job log. They are also
 among the most failure-prone in the matrix, so the least instrumented platform
-is the one failing most. That is worth fixing upstream and it is a one line
-change.
+is the one failing most. A fix is already in flight upstream as PR #29376, open
+since 2 August, so this is recorded as an observation rather than as work to
+duplicate.
 
 ## Matching artifacts to attempts by time
 
