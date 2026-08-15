@@ -18,6 +18,7 @@ from .evaluate import evaluate
 from .extract import extract
 from .fingerprint import fingerprint
 from .gh import GitHub
+from .merge import merge_clusters
 from .report import report
 
 
@@ -54,6 +55,10 @@ def cmd_fingerprint(args) -> None:
         conn.commit()
         print(f"rebuild: cleared {n} fingerprints (normalization/key rules changed)")
     f = fingerprint(conn)
+    m = merge_clusters(conn)
+    f["clusters"] = m["clusters_out"]
+    print(f"merge: {m['clusters_in']} raw clusters -> {m['clusters_out']} after merging "
+          f"{m['merged']} near-duplicates")
     signed = f["signed"]
     print(f"fingerprint: {f['jobs']} evidence records -> {signed} signatures "
           f"in {f['clusters']} clusters"

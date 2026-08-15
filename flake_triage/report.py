@@ -44,7 +44,7 @@ def report(cfg: Config, conn, out_dir: Path | None = None) -> dict[str, Path]:
     clusters = [
         dict(r)
         for r in conn.execute(
-            """SELECT f.cluster_key, COUNT(*) members,
+            """SELECT COALESCE(f.canonical_key, f.cluster_key) AS cluster_key, COUNT(*) members,
                       MIN(r.created_at) first_seen, MAX(r.created_at) last_seen,
                       a.category, a.confidence, a.tier, a.evidence_line, a.rationale,
                       GROUP_CONCAT(DISTINCT e.job_key) job_keys,
@@ -58,9 +58,9 @@ def report(cfg: Config, conn, out_dir: Path | None = None) -> dict[str, Path]:
                JOIN evidence e ON e.job_id = f.job_id
                JOIN jobs j ON j.id = f.job_id
                JOIN runs r ON r.id = j.run_id
-               LEFT JOIN analyses a ON a.cluster_key = f.cluster_key
+               LEFT JOIN analyses a ON a.cluster_key = COALESCE(f.canonical_key, f.cluster_key)
                WHERE f.cluster_key IS NOT NULL
-               GROUP BY f.cluster_key
+               GROUP BY COALESCE(f.canonical_key, f.cluster_key)
                ORDER BY members DESC"""
         )
     ]

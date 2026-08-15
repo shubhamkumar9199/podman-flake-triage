@@ -97,7 +97,10 @@ _NORMALIZERS: list[tuple[re.Pattern, str]] = [
     (re.compile(r"\bgoroutine \d+"), "goroutine N"),
     (re.compile(r"\.(go|bats|sh|py):\d+"), r".\1:N"),
     (re.compile(r"podman-e2e-\S+"), "podman-e2e-X"),                  # tmpdirs
-    (re.compile(r"\b\d+(\.\d+)?(ms|s|m)\b"), "DUR"),
+    # durations appear in several spellings: bats "in 3818ms", ginkgo
+    # "[4.278 seconds]", go "12.5s". All are volatile and must collapse.
+    (re.compile(r"\b\d+(\.\d+)?\s*(milliseconds?|seconds?|minutes?|hours?)\b"), "DUR"),
+    (re.compile(r"\b\d+(\.\d+)?(ms|s|m|h)\b"), "DUR"),
     (re.compile(r"localhost:\d+"), "localhost:PORT"),
     (re.compile(r"\b\d{4,}\b"), "NUM"),
     (re.compile(r"\s+"), " "),

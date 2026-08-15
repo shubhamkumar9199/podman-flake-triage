@@ -55,19 +55,19 @@ def evaluate(cfg: Config, conn, out_dir: Path | None = None) -> Path:
     c_classified = q(
         """SELECT COUNT(DISTINCT t.fail_job_id) FROM transitions t
            JOIN fingerprints f ON f.job_id = t.fail_job_id
-           JOIN analyses a ON a.cluster_key = f.cluster_key"""
+           JOIN analyses a ON a.cluster_key = COALESCE(f.canonical_key,f.cluster_key)"""
     )
 
     # dedup + tier split over everything fingerprinted
     signed = q("SELECT COUNT(*) FROM fingerprints WHERE cluster_key IS NOT NULL")
-    clusters = q("SELECT COUNT(DISTINCT cluster_key) FROM fingerprints WHERE cluster_key IS NOT NULL")
+    clusters = q("SELECT COUNT(DISTINCT COALESCE(canonical_key,cluster_key)) FROM fingerprints WHERE cluster_key IS NOT NULL")
     no_signal = q("SELECT COUNT(*) FROM fingerprints WHERE cluster_key IS NULL")
     regex_jobs = q(
-        """SELECT COUNT(*) FROM fingerprints f JOIN analyses a ON a.cluster_key=f.cluster_key
+        """SELECT COUNT(*) FROM fingerprints f JOIN analyses a ON a.cluster_key=COALESCE(f.canonical_key,f.cluster_key)
            WHERE a.tier='regex'"""
     )
     llm_jobs = q(
-        """SELECT COUNT(*) FROM fingerprints f JOIN analyses a ON a.cluster_key=f.cluster_key
+        """SELECT COUNT(*) FROM fingerprints f JOIN analyses a ON a.cluster_key=COALESCE(f.canonical_key,f.cluster_key)
            WHERE a.tier='llm'"""
     )
 
@@ -77,14 +77,14 @@ def evaluate(cfg: Config, conn, out_dir: Path | None = None) -> Path:
             """SELECT t.fail_job_id, f.cluster_key, a.category
                FROM transitions t
                JOIN fingerprints f ON f.job_id = t.fail_job_id
-               JOIN analyses a ON a.cluster_key = f.cluster_key
+               JOIN analyses a ON a.cluster_key = COALESCE(f.canonical_key,f.cluster_key)
                WHERE a.category = 'GENUINE_REGRESSION'"""
         )
     ]
 
     cats = conn.execute(
         """SELECT a.category, a.tier, COUNT(*) n
-           FROM fingerprints f JOIN analyses a ON a.cluster_key=f.cluster_key
+           FROM fingerprints f JOIN analyses a ON a.cluster_key=COALESCE(f.canonical_key,f.cluster_key)
            GROUP BY a.category, a.tier ORDER BY n DESC"""
     ).fetchall()
 

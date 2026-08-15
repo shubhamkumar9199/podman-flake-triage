@@ -69,20 +69,20 @@ def _clusters(conn) -> list[dict]:
     return [
         dict(r)
         for r in conn.execute(
-            """SELECT f.cluster_key,
+            """SELECT COALESCE(f.canonical_key, f.cluster_key) AS cluster_key,
                       COUNT(*) AS members,
                       (SELECT f2.key_line FROM fingerprints f2
-                        WHERE f2.cluster_key = f.cluster_key LIMIT 1) AS key_line,
+                        WHERE COALESCE(f2.canonical_key,f2.cluster_key) = COALESCE(f.canonical_key,f.cluster_key) LIMIT 1) AS key_line,
                       (SELECT e.summary FROM fingerprints f3
                          JOIN evidence e ON e.job_id = f3.job_id
-                        WHERE f3.cluster_key = f.cluster_key
+                        WHERE COALESCE(f3.canonical_key,f3.cluster_key) = COALESCE(f.canonical_key,f.cluster_key)
                         ORDER BY length(e.summary) DESC LIMIT 1) AS rep_summary,
                       (SELECT e.job_key FROM fingerprints f4
                          JOIN evidence e ON e.job_id = f4.job_id
-                        WHERE f4.cluster_key = f.cluster_key LIMIT 1) AS job_key
+                        WHERE COALESCE(f4.canonical_key,f4.cluster_key) = COALESCE(f.canonical_key,f.cluster_key) LIMIT 1) AS job_key
                FROM fingerprints f
                WHERE f.cluster_key IS NOT NULL
-               GROUP BY f.cluster_key"""
+               GROUP BY COALESCE(f.canonical_key, f.cluster_key)"""
         )
     ]
 

@@ -1,4 +1,4 @@
-# Evaluation — 2026-08-13 23:30 UTC
+# Evaluation — 2026-08-15 11:13 UTC
 
 ## Corpus (all measured live from GHA, no synthetic data)
 - runs analyzed: 174 (64 with >1 attempt, 37%)
@@ -11,7 +11,7 @@
 - classified:         48/62 (77%)
 
 ## Dedup / cost
-- failure signatures: 225  → clusters: 106 (dedup 53%)
+- failure signatures: 225  → clusters: 61 (dedup 73%)
 - no extractable signal: 0
 - occurrences classified by regex tier (no LLM): 65 (29% of classified)
 - occurrences needing LLM tier: 160
@@ -20,20 +20,19 @@
 - confirmed flakes classified GENUINE_REGRESSION: 0
 
 ## Category distribution (clusters weighted by occurrences)
-- TEST_BUG [llm]: 93
+- TEST_BUG [llm]: 64
+- TEST_TIMEOUT [llm]: 50
 - NETWORK_INFRA [regex]: 45
-- VM_INFRA [llm]: 24
-- TEST_TIMEOUT [llm]: 17
+- VM_INFRA [llm]: 19
 - HARNESS [regex]: 12
-- NETWORK_INFRA [llm]: 12
-- PRODUCT_RACE [llm]: 6
+- NETWORK_INFRA [llm]: 8
+- UNKNOWN [llm]: 8
+- PRODUCT_RACE [llm]: 5
 - TEST_TIMEOUT [regex]: 5
-- UNKNOWN [llm]: 3
-- HARNESS [llm]: 2
-- PARALLEL_INTERFERENCE [llm]: 2
+- PARALLEL_INTERFERENCE [llm]: 4
+- RUNNER_INFRA [llm]: 2
 - RUNNER_INFRA [regex]: 2
 - PRODUCT_RACE [regex]: 1
-- RUNNER_INFRA [llm]: 1
 
 ## Known limitations (stated, not hidden)
 - FAIL→PASS labels *flakiness*, not category; per-category accuracy needs

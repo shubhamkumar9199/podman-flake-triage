@@ -185,3 +185,13 @@ def test_unmount_einval_is_a_cascade_error():
     picked = pick_key_line(summary)
     assert picked is not None
     assert "unmount" in picked[0]
+
+
+def test_ginkgo_seconds_spelling_normalized():
+    # ginkgo prints "[4.278 seconds]"; bats prints "in 3818ms". Both are
+    # volatile durations and must collapse to the same token, or identical
+    # failures split into one cluster per timing value.
+    a = normalize("Podman cp | • [FAILED] [4.278 seconds]")
+    b = normalize("Podman cp | • [FAILED] [4.205 seconds]")
+    assert a == b
+    assert normalize("took 3818ms") == normalize("took 42ms")
