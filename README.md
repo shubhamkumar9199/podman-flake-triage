@@ -180,12 +180,25 @@ Settings come from the environment: `FT_REPO`, `FT_WORKFLOW`, `FT_DATA_DIR`,
 
 ## What this does not do yet
 
-- Clusters are exact-key only. Two failures that are clearly the same problem
-  but differ slightly in wording stay separate. Near-duplicate merging is the
-  obvious next step.
+- Every number here comes from a single ten-day window, 4 to 13 August 2026.
+  That is one sample, not a trend. Nothing in this README should be read as a
+  claim about how Podman CI behaves generally, and the first thing worth doing
+  with more time is running the same pipeline over several months.
+- Near-duplicate merging is deliberately conservative. It collapsed 63 raw
+  signatures to 61, so only two pairs were close enough to join. The same root
+  cause surfacing in two different tests still produces two clusters, because
+  the key carries the owning test name. Joining those is a judgement no string
+  distance can make safely, and it is left to the classification tier.
 - Category accuracy is not measured. Confirmed flakes tell me a failure was
   flaky, not which category it belongs to, so per-category accuracy needs a
   sample checked by hand. I did not want to claim a number I had not measured.
+- Ground truth only sees failures somebody bothered to re-run. 62 of 305 failed
+  jobs have a confirmed FAIL to PASS transition. The other 243 are unproven
+  rather than innocent, and no number here should be read as covering them.
+- Coverage is Linux heavy. The logformatter call in `hack/ci/win-lib.ps1` is
+  still gated on `$Env:CIRRUS_CI`, which nothing has set since Cirrus was
+  deleted, so Windows and macOS jobs produce no formatted logs to parse. A fix
+  is already open upstream as PR #29376.
 - Discovery works on a time window, so a run that gets re-run long after it
   ages out of that window is missed.
 - CI logs are treated as untrusted input and the model is told to treat log
