@@ -28,6 +28,25 @@ def _yaml_quote(s: str) -> str:
     return '"' + s.replace("\\", "\\\\").replace('"', '\\"') + '"'
 
 
+def cluster_gates(confirmed: int, branches: str | None) -> dict:
+    """Decide what the re-run record and branch spread say about a cluster.
+
+    Kept separate from report() so the rules can be tested without a database,
+    because getting them wrong puts a hard breakage into a catalogue that other
+    automation trusts.
+    """
+    seen = {b for b in (branches or "").split(",") if b}
+    unconfirmed = confirmed == 0
+    return {
+        "unconfirmed": unconfirmed,
+        "branch_concentrated": unconfirmed and "main" not in seen,
+        "branches_seen": sorted(seen),
+        # a catalogue entry claims "retrying this is worthwhile", which is only
+        # true of something that has actually been seen to pass on a retry
+        "catalogue_eligible": not unconfirmed,
+    }
+
+
 def report(cfg: Config, conn, out_dir: Path | None = None) -> dict[str, Path]:
     out_dir = out_dir or (cfg.data_dir / "reports")
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -52,8 +71,7 @@ def report(cfg: Config, conn, out_dir: Path | None = None) -> dict[str, Path]:
                       -- confirmed = at least one member job is a FAIL->PASS transition
                       SUM(EXISTS(SELECT 1 FROM transitions t
                                  WHERE t.fail_job_id = f.job_id)) confirmed,
-                      COUNT(DISTINCT r.head_branch) n_branches,
-                      MAX(r.head_branch) any_branch
+                      GROUP_CONCAT(DISTINCT r.head_branch) branches
                FROM fingerprints f
                JOIN evidence e ON e.job_id = f.job_id
                JOIN jobs j ON j.id = f.job_id
@@ -65,19 +83,29 @@ def report(cfg: Config, conn, out_dir: Path | None = None) -> dict[str, Path]:
         )
     ]
 
-    # Metadata gate no log-text classifier can provide: a cluster confined to a
-    # single non-main branch with zero FAIL->PASS confirmations is almost
-    # certainly that PR breaking things, not a flake. (Observed live: the
-    # top signature in a 10-day window was one PR failing the same test 37x
-    # across 13 matrix jobs.) These are annotated in the digest and excluded
-    # from the known-flakes catalog regardless of their text classification.
+    # Two metadata gates that no amount of reading the log text can replace.
+    #
+    # 1. UNCONFIRMED. A cluster that has never once passed on a re-run has no
+    #    evidence of being flaky at all, whatever its error message looks like.
+    #    Something consistently broken produces the same text as something
+    #    intermittent. This is the gate that matters for the catalogue: an
+    #    entry consumed by a /retrigger command (podman#28870) tells the system
+    #    "retrying this is worthwhile", and for a hard breakage that is false.
+    #
+    #    Found by a maintainer's chat message rather than by testing. A seccomp
+    #    profile failure appeared 8 times on `machine linux amd64` across three
+    #    release branches from 11 Aug, never once green on a re-run. The lead
+    #    maintainer diagnosed it by hand on 14 Aug: "the linux machine failure
+    #    is not a flake ... a new test failure due underlying changes on the
+    #    runner itself". The tool had the evidence and still listed it as a
+    #    known flake, because the old gate demanded a single branch and this
+    #    spanned three.
+    #
+    # 2. BRANCH-CONCENTRATED. Never seen on main, and unconfirmed, means the
+    #    branch is the common factor rather than the infrastructure. Observed
+    #    live: one PR failed the same test 37 times across 13 matrix jobs.
     for c in clusters:
-        c["pr_concentrated"] = (
-            c["confirmed"] == 0
-            and c["n_branches"] == 1
-            and c["any_branch"] not in ("main",)
-            and not c["any_branch"].startswith("v")  # release branches
-        )
+        c.update(cluster_gates(c["confirmed"], c["branches"]))
 
     # ---------- digest.md ----------
     lines = [
@@ -102,9 +130,13 @@ def report(cfg: Config, conn, out_dir: Path | None = None) -> dict[str, Path]:
         cat = c["category"] or "UNCLASSIFIED"
         conf = f" ({c['confidence']:.2f}, {c['tier']})" if c["category"] else ""
         confirmed = f" · {c['confirmed']} re-run-confirmed" if c["confirmed"] else ""
-        if c["pr_concentrated"]:
-            confirmed += (f" · ⚠ confined to branch `{c['any_branch']}`, never re-run to"
-                          " green — likely that PR's regression, not a flake")
+        if c["branch_concentrated"]:
+            confirmed += (f" · ⚠ never seen on main and never re-run to green"
+                          f" (branches: {', '.join(c['branches_seen'])}) — the branch"
+                          " looks like the common factor, not the infrastructure")
+        elif c["unconfirmed"]:
+            confirmed += (" · ⚠ never once passed on a re-run, so there is no evidence"
+                          " it is intermittent rather than simply broken")
         lines += [
             f"### {cat}{conf} — {c['members']} occurrence(s){confirmed}",
             "",
@@ -136,8 +168,8 @@ def report(cfg: Config, conn, out_dir: Path | None = None) -> dict[str, Path]:
     for c in clusters:
         if not c["category"] or c["category"] in ("GENUINE_REGRESSION", "UNKNOWN"):
             continue  # a known-flakes catalog must not contain regressions or guesses
-        if c["pr_concentrated"]:
-            continue  # single-PR breakage is not a known flake, whatever the text says
+        if not c["catalogue_eligible"]:
+            continue  # never observed to pass on a re-run, so not a known flake
         ylines += [
             f"  - signature: {_yaml_quote(c['cluster_key'])}",
             f"    category: {c['category']}",
